@@ -139,6 +139,14 @@ public class MainFragment extends Fragment {
         webView.loadUrl(url);
     }
 
+    public boolean onBackPressed() {
+        if (webViewContainerView.getVisibility() == View.VISIBLE) {
+            webViewContainerView.setVisibility(View.GONE);
+            return true;
+        }
+        return false;
+    }
+
     private class WebViewDownloadListener implements DownloadListener {
         @Override
         public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
