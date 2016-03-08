@@ -92,10 +92,9 @@ public class MainFragment extends Fragment {
     void onGoButtonClicked() {
         final Handler handler = new Handler();
         String url = linkInputView.getText().toString();
-//        if (url.equalsIgnoreCase("YAPPSTORE")) {
-//            url = "https://yappstore.yahoo.com/api/v3/download/com.yahoo.mobile.client.android.yappstore";
-//        }
-//        if (url.startsWith(""))
+        if (!url.contains("://")) {
+            url = "http://" + url;
+        }
         final WebViewDownloadListener listener = new WebViewDownloadListener();
         webViewContainerView.setVisibility(View.VISIBLE);
         webView.getSettings().setJavaScriptEnabled(true);
