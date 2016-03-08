@@ -136,6 +136,7 @@ public class MainFragment extends Fragment {
             }
         });
         webView.loadUrl(url);
+        webView.requestFocus();
     }
 
     public boolean onBackPressed() {
