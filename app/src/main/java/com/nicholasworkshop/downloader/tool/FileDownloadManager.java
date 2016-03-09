@@ -21,7 +21,7 @@ import timber.log.Timber;
  */
 public class FileDownloadManager {
 
-    private static final File STORAGE_DIR = Environment.getExternalStorageDirectory();
+    private static final File STORAGE_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
     @Inject Context context;
     @Inject FileDownloader fileDownloader;
