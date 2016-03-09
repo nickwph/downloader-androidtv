@@ -32,10 +32,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".service.FileDownloadService"
-            android:exported="false"/>
-
     </application>
 
 </manifest>
