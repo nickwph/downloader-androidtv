@@ -2,7 +2,9 @@ package com.nicholasworkshop.downloader.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -19,10 +21,12 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.nicholasworkshop.downloader.BuildConfig;
 import com.nicholasworkshop.downloader.MainApplication;
 import com.nicholasworkshop.downloader.R;
 import com.nicholasworkshop.downloader.tool.FileDownloadManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,10 +95,7 @@ public class MainFragment extends Fragment {
     @SuppressLint("SetJavaScriptEnabled")
     void onGoButtonClicked() {
         final Handler handler = new Handler();
-        String url = linkInputView.getText().toString();
-        if (!url.contains("://")) {
-            url = "http://" + url;
-        }
+        String url = getValidatedUrl();
         final WebViewDownloadListener listener = new WebViewDownloadListener();
         webViewContainerView.setVisibility(View.VISIBLE);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -139,6 +140,14 @@ public class MainFragment extends Fragment {
         webView.requestFocus();
     }
 
+    private String getValidatedUrl() {
+        String url = linkInputView.getText().toString();
+        if (!url.contains("://")) {
+            url = "http://" + url;
+        }
+        return url;
+    }
+
     public boolean onBackPressed() {
         if (webViewContainerView.getVisibility() == View.VISIBLE) {
             webViewContainerView.setVisibility(View.GONE);
@@ -149,25 +158,32 @@ public class MainFragment extends Fragment {
 
     private class WebViewDownloadListener implements DownloadListener {
         @Override
-        public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-            Timber.e("url=" + url + " userAgent=" + userAgent + " contentDisposition=" + contentDisposition + " mimetype=" + mimetype + " contentLength=" + contentLength);
+        public void onDownloadStart(String url, String userAgent, String contentDisposition, final String mimeType, long contentLength) {
+            Timber.e("url=" + url + " userAgent=" + userAgent + " contentDisposition=" + contentDisposition + " mimetype=" + mimeType + " contentLength=" + contentLength);
             String filename = null;
             Matcher matcher = Pattern.compile("filename=\"(.*?)\"").matcher(contentDisposition);
             if (matcher.find() && matcher.groupCount() > 0) {
                 filename = matcher.group(1);
                 Timber.e("filename=" + filename);
             }
-
-            fileDownloadManager.start(url, mimetype, filename)
+            fileDownloadManager.start(url, mimeType, filename)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<FileDownloadManager.Progress>() {
                         @Override
                         public void call(FileDownloadManager.Progress progress) {
                             String factionString = String.format("%.2f%%", (float) progress.getSoFarBytes() / progress.getTotalBytes() * 100);
                             statusView.setText("Downloaded " + factionString + " (" + progress.getSoFarBytes() + "/" + progress.getTotalBytes() + ")");
+                            if (progress.getTotalBytes() == progress.getSoFarBytes()) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                File file = new File(progress.getPath());
+                                file.setReadable(true, false);
+                                intent.setDataAndType(Uri.fromFile(file), mimeType);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+
                         }
                     });
-//            FileDownloadService.newInstance(getActivity(), url, mimetype, filename);
             handler.post(new Runnable() {
                 @Override
                 public void run() {

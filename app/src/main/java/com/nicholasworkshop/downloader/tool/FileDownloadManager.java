@@ -1,8 +1,6 @@
 package com.nicholasworkshop.downloader.tool;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Environment;
 import android.webkit.CookieManager;
 
@@ -63,12 +61,8 @@ public class FileDownloadManager {
 
                             @Override
                             protected void completed(BaseDownloadTask task) {
-                                Intent intent = new Intent(Intent.ACTION_VIEW);
-                                File file = new File(task.getPath());
-                                file.setReadable(true, false);
-                                intent.setDataAndType(Uri.fromFile(file), mimeType);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                context.startActivity(intent);
+                                progress.soFarBytes = progress.totalBytes;
+                                subscriber.onNext(progress);
                                 subscriber.onCompleted();
                             }
                         })
@@ -90,6 +84,15 @@ public class FileDownloadManager {
         public int getTotalBytes() {
             return totalBytes;
         }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
     }
 
     private File getDownloadPath(String filename) {
