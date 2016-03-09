@@ -22,7 +22,7 @@
 
         <activity
             android:name=".activity.MainActivity"
-            android:banner="@mipmap/ic_launcher_leanback"
+            android:banner="@drawable/image_banner"
             android:icon="@mipmap/ic_launcher_leanback"
             android:label="@string/app_name"
             android:logo="@mipmap/ic_launcher_leanback"
