@@ -4,6 +4,7 @@ Change Log
 # v1.0.2 (Mar 9th 2016)
 - Able to download video and audio files
 - Fixed exceptions caused by null filename and cookie
+- Added AmazonSDK minimum version
 
 # v1.0.1 (Mar 8th 2016)
 - Changed download location to the public Download directory
