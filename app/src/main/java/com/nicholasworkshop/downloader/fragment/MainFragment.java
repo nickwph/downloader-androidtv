@@ -122,8 +122,10 @@ public class MainFragment extends Fragment {
                     String contentDisposition = response.header("Content-Disposition");
                     String contentType = response.header("Content-Type");
                     boolean hasAttachment = contentDisposition != null && contentDisposition.contains("attachment");
+                    boolean isVideo = contentType != null && contentType.contains("video/");
+                    boolean isAudio = contentType != null && contentType.contains("audio/");
                     boolean isOctetStream = contentType != null && contentType.equals("application/octet-stream");
-                    if (hasAttachment || isOctetStream) {
+                    if (hasAttachment || isVideo || isAudio || isOctetStream) {
                         String userAgent = response.header("User-Agent");
                         long contentLength = Long.parseLong(response.header("Content-Length"));
                         listener.onDownloadStart(url, userAgent, contentDisposition, contentType, contentLength);
