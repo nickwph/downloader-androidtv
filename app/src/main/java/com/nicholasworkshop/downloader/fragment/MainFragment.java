@@ -21,7 +21,6 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.nicholasworkshop.downloader.BuildConfig;
 import com.nicholasworkshop.downloader.MainApplication;
 import com.nicholasworkshop.downloader.R;
 import com.nicholasworkshop.downloader.tool.FileDownloadManager;
@@ -161,19 +160,28 @@ public class MainFragment extends Fragment {
         public void onDownloadStart(String url, String userAgent, String contentDisposition, final String mimeType, long contentLength) {
             Timber.e("url=" + url + " userAgent=" + userAgent + " contentDisposition=" + contentDisposition + " mimetype=" + mimeType + " contentLength=" + contentLength);
             String filename = null;
-            Matcher matcher = Pattern.compile("filename=\"(.*?)\"").matcher(contentDisposition);
-            if (matcher.find() && matcher.groupCount() > 0) {
-                filename = matcher.group(1);
-                Timber.e("filename=" + filename);
+            if (contentDisposition != null) {
+                Matcher matcher = Pattern.compile("filename=\"(.*?)\"").matcher(contentDisposition);
+                if (matcher.find() && matcher.groupCount() > 0) {
+                    filename = matcher.group(1);
+                    Timber.e("filename=" + filename);
+                }
             }
             fileDownloadManager.start(url, mimeType, filename)
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            statusView.setText("Error: " + throwable.getMessage());
+                        }
+                    })
                     .subscribe(new Action1<FileDownloadManager.Progress>() {
                         @Override
                         public void call(FileDownloadManager.Progress progress) {
                             String factionString = String.format("%.2f%%", (float) progress.getSoFarBytes() / progress.getTotalBytes() * 100);
                             statusView.setText("Downloaded " + factionString + " (" + progress.getSoFarBytes() + "/" + progress.getTotalBytes() + ")");
                             if (progress.getTotalBytes() == progress.getSoFarBytes()) {
+                                statusView.setText("Download Completed");
                                 Intent intent = new Intent(Intent.ACTION_VIEW);
                                 File file = new File(progress.getPath());
                                 file.setReadable(true, false);

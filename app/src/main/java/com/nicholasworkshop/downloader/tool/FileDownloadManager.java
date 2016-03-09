@@ -1,6 +1,7 @@
 package com.nicholasworkshop.downloader.tool;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Environment;
 import android.webkit.CookieManager;
 
@@ -32,7 +33,7 @@ public class FileDownloadManager {
     }
 
     public Observable<Progress> start(final String url, final String mimeType, String filename) {
-        final File file = getDownloadPath(filename);
+        final File file = getDownloadPath(url, filename);
         Timber.i("initializing download for file " + file.getName());
         Timber.v("- url: " + url);
         Timber.v("- path: " + file.getAbsolutePath());
@@ -42,9 +43,9 @@ public class FileDownloadManager {
                 final Progress progress = new Progress();
                 progress.url = url;
                 progress.path = file.getAbsolutePath();
-                fileDownloader.create(url)
+                String cookie = CookieManager.getInstance().getCookie(url);
+                BaseDownloadTask task = fileDownloader.create(url)
                         .setPath(file.getAbsolutePath())
-                        .addHeader("Cookie", CookieManager.getInstance().getCookie(url))
                         .setListener(new SimpleFileDownloaderListener() {
 
                             @Override
@@ -65,8 +66,11 @@ public class FileDownloadManager {
                                 subscriber.onNext(progress);
                                 subscriber.onCompleted();
                             }
-                        })
-                        .start();
+                        });
+                if (cookie != null) {
+                    task.addHeader("Cookie", CookieManager.getInstance().getCookie(url));
+                }
+                task.start();
             }
         });
     }
@@ -95,7 +99,10 @@ public class FileDownloadManager {
 
     }
 
-    private File getDownloadPath(String filename) {
+    private File getDownloadPath(String url, String filename) {
+        if (filename == null) {
+            filename = Uri.parse(url).getLastPathSegment();
+        }
         File file = new File(STORAGE_DIR, filename);
         for (int version = 2; file.exists(); version++) {
             Timber.i("file exits! filename=" + file.getName());
