@@ -1,6 +1,9 @@
 Change Log
 ----------
 
+# v1.0.3 (Mar 9th 2016)
+- Added banner for Android TVs
+
 # v1.0.2 (Mar 9th 2016)
 - Able to download video and audio files
 - Fixed exceptions caused by null filename and cookie
