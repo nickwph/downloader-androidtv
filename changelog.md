@@ -1,6 +1,9 @@
 Change Log
 ----------
 
+# v1.0.5 (Mar 16th 2016)
+- Fixed banner for Android TVs
+
 # v1.0.4 (Mar 9th 2016)
 - Fixed banner for Android TVs
 
