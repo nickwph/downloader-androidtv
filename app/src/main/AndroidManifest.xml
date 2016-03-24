@@ -15,7 +15,7 @@
         android:name="com.nicholasworkshop.download.MainApplication"
         android:allowBackup="true"
         android:banner="@drawable/banner"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/icon_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Leanback">
@@ -23,9 +23,9 @@
         <activity
             android:name="com.nicholasworkshop.download.activity.MainActivity"
             android:banner="@drawable/banner"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/icon_launcher"
             android:label="@string/app_name"
-            android:logo="@mipmap/ic_launcher"
+            android:logo="@drawable/icon_launcher"
             android:theme="@style/Theme.Leanback.Browse">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
