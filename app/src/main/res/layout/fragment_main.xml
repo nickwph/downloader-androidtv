@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="SimplyDownload"
+            android:text="JustDownload"
             android:textSize="30sp"/>
 
         <EditText
@@ -26,7 +26,7 @@
             android:layout_width="800dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:hint="Simply Type in URL Here and Hit 'Download'"
+            android:hint="Just Type in URL Here and Hit 'Download'"
             android:inputType="textWebEmailAddress"
             android:maxLines="1"
             android:minWidth="500dp"
