@@ -1,7 +1,7 @@
-package com.nicholasworkshop.downloader;
+package com.nicholasworkshop.download;
 
-import com.nicholasworkshop.downloader.activity.MainActivity;
-import com.nicholasworkshop.downloader.fragment.MainFragment;
+import com.nicholasworkshop.download.activity.MainActivity;
+import com.nicholasworkshop.download.fragment.MainFragment;
 
 import javax.inject.Singleton;
 

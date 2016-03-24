@@ -1,4 +1,4 @@
-package com.nicholasworkshop.downloader;
+package com.nicholasworkshop.download;
 
 import android.app.Application;
 

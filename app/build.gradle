@@ -5,7 +5,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
     defaultConfig {
-        applicationId "com.nicholasworkshop.downloader"
+        applicationId "com.nicholasworkshop.download"
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 6

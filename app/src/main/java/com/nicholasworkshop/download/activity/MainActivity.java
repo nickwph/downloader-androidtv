@@ -1,4 +1,4 @@
-package com.nicholasworkshop.downloader.activity;
+package com.nicholasworkshop.download.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -9,9 +9,9 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-import com.nicholasworkshop.downloader.MainApplication;
-import com.nicholasworkshop.downloader.R;
-import com.nicholasworkshop.downloader.fragment.MainFragment;
+import com.nicholasworkshop.download.MainApplication;
+import com.nicholasworkshop.download.R;
+import com.nicholasworkshop.download.fragment.MainFragment;
 
 import timber.log.Timber;
 

@@ -1,4 +1,4 @@
-package com.nicholasworkshop.downloader.utility;
+package com.nicholasworkshop.download.utility;
 
 /**
  * Created by nickwph on 3/8/16.

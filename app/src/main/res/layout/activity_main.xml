@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_fragment"
-    class="com.nicholasworkshop.downloader.fragment.MainFragment"
+    class="com.nicholasworkshop.download.fragment.MainFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:deviceIds="tv"

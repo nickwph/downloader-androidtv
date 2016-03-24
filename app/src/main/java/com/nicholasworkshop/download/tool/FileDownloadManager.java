@@ -1,4 +1,4 @@
-package com.nicholasworkshop.downloader.tool;
+package com.nicholasworkshop.download.tool;
 
 import android.content.Context;
 import android.net.Uri;
@@ -7,7 +7,7 @@ import android.webkit.CookieManager;
 
 import com.liulishuo.filedownloader.BaseDownloadTask;
 import com.liulishuo.filedownloader.FileDownloader;
-import com.nicholasworkshop.downloader.utility.SimpleFileDownloaderListener;
+import com.nicholasworkshop.download.utility.SimpleFileDownloaderListener;
 
 import java.io.File;
 

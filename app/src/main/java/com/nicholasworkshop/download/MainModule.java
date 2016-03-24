@@ -1,4 +1,4 @@
-package com.nicholasworkshop.downloader;
+package com.nicholasworkshop.download;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -9,7 +9,7 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
 import com.liulishuo.filedownloader.FileDownloader;
-import com.nicholasworkshop.downloader.tool.ReleaseTree;
+import com.nicholasworkshop.download.tool.ReleaseTree;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

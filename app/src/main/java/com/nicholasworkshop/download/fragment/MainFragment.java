@@ -1,4 +1,4 @@
-package com.nicholasworkshop.downloader.fragment;
+package com.nicholasworkshop.download.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
@@ -21,9 +21,9 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.nicholasworkshop.downloader.MainApplication;
-import com.nicholasworkshop.downloader.R;
-import com.nicholasworkshop.downloader.tool.FileDownloadManager;
+import com.nicholasworkshop.download.MainApplication;
+import com.nicholasworkshop.download.R;
+import com.nicholasworkshop.download.tool.FileDownloadManager;
 
 import java.io.File;
 import java.io.IOException;

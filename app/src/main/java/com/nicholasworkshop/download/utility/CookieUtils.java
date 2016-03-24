@@ -1,4 +1,4 @@
-package com.nicholasworkshop.downloader.utility;
+package com.nicholasworkshop.download.utility;
 
 import android.os.Build;
 import android.webkit.CookieManager;
