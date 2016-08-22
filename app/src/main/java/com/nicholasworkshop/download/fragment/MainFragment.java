@@ -177,6 +177,12 @@ public class MainFragment extends Fragment {
                             statusView.setText("Error: " + throwable.getMessage());
                         }
                     })
+                    .doOnError(new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Timber.e("lol", throwable);
+                        }
+                    })
                     .subscribe(new Action1<FileDownloadManager.Progress>() {
                         @Override
                         public void call(FileDownloadManager.Progress progress) {
@@ -191,7 +197,6 @@ public class MainFragment extends Fragment {
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                             }
-
                         }
                     });
             handler.post(new Runnable() {
