@@ -1,6 +1,5 @@
 package com.nicholasworkshop.downloader.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -18,11 +17,10 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.nicholasworkshop.downloader.MainApplication;
-import com.nicholasworkshop.downloader.R;
+import com.nicholasworkshop.downloader.databinding.FragmentMainBinding;
 import com.nicholasworkshop.downloader.tool.FileDownloadManager;
 
 import java.io.File;
@@ -33,9 +31,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -50,17 +45,17 @@ import timber.log.Timber;
  */
 public class MainFragment extends Fragment {
 
-    @Inject OkHttpClient okHttpClient;
-    @Inject Handler handler;
-    @Inject FileDownloadManager fileDownloadManager;
-    @Inject @Named("TravelingTypewriter") Typeface travelingTypewriterTypeface;
+    @Inject
+    OkHttpClient okHttpClient;
+    @Inject
+    Handler handler;
+    @Inject
+    FileDownloadManager fileDownloadManager;
+    @Inject
+    @Named("TravelingTypewriter")
+    Typeface travelingTypewriterTypeface;
 
-    @Bind(R.id.title) TextView titleView;
-    @Bind(R.id.link_input) EditText linkInputView;
-    @Bind(R.id.webview) WebView webView;
-    @Bind(R.id.webview_url) TextView webViewUrlView;
-    @Bind(R.id.webview_container) View webViewContainerView;
-    @Bind(R.id.status) TextView statusView;
+    private FragmentMainBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,79 +65,81 @@ public class MainFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        binding = FragmentMainBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        ButterKnife.bind(this, view);
-        titleView.setTypeface(travelingTypewriterTypeface);
-        linkInputView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        binding.title.setTypeface(travelingTypewriterTypeface);
+        binding.linkInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
                 Timber.v("actionId=" + actionId + " event=" + event);
                 if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    onGoButtonClicked();
+                    onGoButtonClickedListener.onClick(null);
                     return true;
                 }
                 return false;
             }
         });
+        binding.go.setOnClickListener(onGoButtonClickedListener);
     }
 
-    @OnClick(R.id.go)
-    @SuppressLint("SetJavaScriptEnabled")
-    void onGoButtonClicked() {
-        final Handler handler = new Handler();
-        String url = getValidatedUrl();
-        final WebViewDownloadListener listener = new WebViewDownloadListener();
-        webViewContainerView.setVisibility(View.VISIBLE);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setDownloadListener(listener);
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                Timber.e("shouldInterceptRequest request=" + request);
-                final String url = request.getUrl().toString();
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        webViewUrlView.setText(url);
+    private View.OnClickListener onGoButtonClickedListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            final Handler handler = new Handler();
+            String url = getValidatedUrl();
+            final WebViewDownloadListener listener = new WebViewDownloadListener();
+            binding.webviewContainer.setVisibility(View.VISIBLE);
+            binding.webview.getSettings().setJavaScriptEnabled(true);
+            binding.webview.setDownloadListener(listener);
+            binding.webview.setWebViewClient(new WebViewClient() {
+                @Override
+                public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                    Timber.e("shouldInterceptRequest request=" + request);
+                    final String url = request.getUrl().toString();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            binding.webviewUrl.setText(url);
+                        }
+                    });
+                    try {
+                        Request.Builder builder = new Request.Builder();
+                        String cookie = CookieManager.getInstance().getCookie(url);
+                        if (cookie != null) {
+                            builder.addHeader("Cookie", CookieManager.getInstance().getCookie(url));
+                        }
+                        Call call = okHttpClient.newCall(builder.url(url).head().build());
+                        Response response = call.execute();
+                        Timber.e("" + response);
+                        String contentDisposition = response.header("Content-Disposition");
+                        String contentType = response.header("Content-Type");
+                        boolean hasAttachment = contentDisposition != null && contentDisposition.contains("attachment");
+                        boolean isVideo = contentType != null && contentType.contains("video/");
+                        boolean isAudio = contentType != null && contentType.contains("audio/");
+                        boolean isOctetStream = contentType != null && contentType.equals("application/octet-stream");
+                        if (hasAttachment || isVideo || isAudio || isOctetStream) {
+                            String userAgent = response.header("User-Agent");
+                            long contentLength = Long.parseLong(response.header("Content-Length"));
+                            listener.onDownloadStart(url, userAgent, contentDisposition, contentType, contentLength);
+                            return null;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                });
-                try {
-                    Request.Builder builder = new Request.Builder();
-                    String cookie = CookieManager.getInstance().getCookie(url);
-                    if (cookie != null) {
-                        builder.addHeader("Cookie", CookieManager.getInstance().getCookie(url));
-                    }
-                    Call call = okHttpClient.newCall(builder.url(url).head().build());
-                    Response response = call.execute();
-                    Timber.e("" + response);
-                    String contentDisposition = response.header("Content-Disposition");
-                    String contentType = response.header("Content-Type");
-                    boolean hasAttachment = contentDisposition != null && contentDisposition.contains("attachment");
-                    boolean isVideo = contentType != null && contentType.contains("video/");
-                    boolean isAudio = contentType != null && contentType.contains("audio/");
-                    boolean isOctetStream = contentType != null && contentType.equals("application/octet-stream");
-                    if (hasAttachment || isVideo || isAudio || isOctetStream) {
-                        String userAgent = response.header("User-Agent");
-                        long contentLength = Long.parseLong(response.header("Content-Length"));
-                        listener.onDownloadStart(url, userAgent, contentDisposition, contentType, contentLength);
-                        return null;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    return super.shouldInterceptRequest(view, request);
                 }
-                return super.shouldInterceptRequest(view, request);
-            }
-        });
-        webView.loadUrl(url);
-        webView.requestFocus();
-    }
+            });
+            binding.webview.loadUrl(url);
+            binding.webview.requestFocus();
+        }
+    };
 
     private String getValidatedUrl() {
-        String url = linkInputView.getText().toString();
+        String url = binding.linkInput.getText().toString();
         if (!url.contains("://")) {
             url = "http://" + url;
         }
@@ -150,8 +147,8 @@ public class MainFragment extends Fragment {
     }
 
     public boolean onBackPressed() {
-        if (webViewContainerView.getVisibility() == View.VISIBLE) {
-            webViewContainerView.setVisibility(View.GONE);
+        if (binding.webviewContainer.getVisibility() == View.VISIBLE) {
+            binding.webviewContainer.setVisibility(View.GONE);
             return true;
         }
         return false;
@@ -174,16 +171,16 @@ public class MainFragment extends Fragment {
                     .doOnError(new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
-                            statusView.setText("Error: " + throwable.getMessage());
+                            binding.status.setText("Error: " + throwable.getMessage());
                         }
                     })
                     .subscribe(new Action1<FileDownloadManager.Progress>() {
                         @Override
                         public void call(FileDownloadManager.Progress progress) {
                             String factionString = String.format("%.2f%%", (float) progress.getSoFarBytes() / progress.getTotalBytes() * 100);
-                            statusView.setText("Downloaded " + factionString + " (" + progress.getSoFarBytes() + "/" + progress.getTotalBytes() + ")");
+                            binding.status.setText("Downloaded " + factionString + " (" + progress.getSoFarBytes() + "/" + progress.getTotalBytes() + ")");
                             if (progress.getTotalBytes() == progress.getSoFarBytes()) {
-                                statusView.setText("Download Completed");
+                                binding.status.setText("Download Completed");
                                 Intent intent = new Intent(Intent.ACTION_VIEW);
                                 File file = new File(progress.getPath());
                                 file.setReadable(true, false);
@@ -197,9 +194,15 @@ public class MainFragment extends Fragment {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    webViewContainerView.setVisibility(View.GONE);
+                    binding.webviewContainer.setVisibility(View.GONE);
                 }
             });
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
