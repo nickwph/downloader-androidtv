@@ -1,13 +1,14 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdk 32
     defaultConfig {
         applicationId "com.nicholasworkshop.downloader"
-        minSdkVersion 21
-        targetSdkVersion 23
+        minSdk 28
+        targetSdk 32
         versionCode 6
         versionName "1.0.5"
     }
@@ -20,18 +21,17 @@ android {
 }
 
 dependencies {
-    apt 'com.google.dagger:dagger-compiler:2.0.2'
-    compile 'com.google.dagger:dagger:2.0.2'
-    provided 'javax.annotation:jsr250-api:1.0'
-
-    compile 'io.reactivex:rxjava:1.1.0'
-    compile 'io.reactivex:rxandroid:1.1.0'
-    compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.jakewharton.timber:timber:4.1.1'
-    compile 'com.github.bumptech.glide:glide:3.4.0'
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
-    compile 'com.liulishuo.filedownloader:library:0.2.0'
-    compile 'com.android.support:recyclerview-v7:23.2.0'
-    compile 'com.android.support:leanback-v17:23.2.0'
-    compile 'com.android.support:appcompat-v7:23.2.0'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.40.5'
+    implementation 'com.google.dagger:dagger:2.40.5'
+    implementation 'io.reactivex:rxjava:1.1.0'
+    implementation 'io.reactivex:rxandroid:1.1.0'
+    implementation 'com.jakewharton:butterknife:7.0.1'
+    implementation 'com.jakewharton.timber:timber:4.1.1'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.7.2'
+    implementation 'com.liulishuo.filedownloader:library:0.2.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.leanback:leanback:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
 }

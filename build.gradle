@@ -1,15 +1,9 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-alpha1'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
+plugins {
+    id 'com.android.application' version '7.2.1' apply false
+    id 'com.android.library' version '7.2.1' apply false
+    id 'org.jetbrains.kotlin.android' version '1.7.0' apply false
 }
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
